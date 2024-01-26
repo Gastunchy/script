@@ -4,14 +4,10 @@
 
 ## Estructura del Repositorio
 
-- **Script1:** Descripción breve del primer script.
-- **Script2:** Descripción breve del segundo script.
+- **Brunch: apache-git** Script de validacion e instalacion de apache2 y git, actualizar un repositorio y en el caso de que no este, clonarlo.
+- **Brunch: validador** Validador de paquete, te pregunta el paquete, valida si esta instalado, en el caso de que no, lo instala.
 - ...
-
-## Contenido Adicional
-
-Además de los scripts, este repositorio también incluye recursos y documentación relacionada con el desarrollo de software. Explora las distintas ramas para acceder a contenido específico.
-
+- 
 ## Contribuciones
 
 ¡Tu colaboración es valiosa! Si tienes sugerencias, mejoras o nuevos scripts que quisieras compartir, ¡no dudes en contribuir!
