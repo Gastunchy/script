@@ -6,7 +6,7 @@
 
 - **Brunch: apache-git** Script de validacion e instalacion de apache2 y git, actualizar un repositorio y en el caso de que no este, clonarlo.
 - **Brunch: validador** Validador de paquete, te pregunta el paquete, valida si esta instalado, en el caso de que no, lo instala.
-- ...
+- **Brunch: deploy-ecommerce** Draft de un deploy de una pag ecommerce con apache2, php y mariaDB 
 - 
 ## Contribuciones
 
