@@ -19,90 +19,90 @@ NC='\033[0m'
 # Validacion de usuario ROOT y variables de DB
 
 if [ "${USERID}" -ne 0 ]; then
-    echo "\n${BRED}Correr con usuario ROOT.${NC}"
+    echo -e "\n${BRED}Correr con usuario ROOT.${NC}"
     exit
 elif [ -z "${USERDB}" ]; then
-    echo "\n${BRED}La variable 'USERDB' no esta definida.${NC}"
+    echo -e "\n${BRED}La variable 'USERDB' no esta definida.${NC}"
     exit
 elif [ -z "${PASSDB}" ]; then
-    echo "\n${BRED}La variable 'PASSDB' no esta definida.${NC}"
+    echo -e "\n${BRED}La variable 'PASSDB' no esta definida.${NC}"
     exit
 fi
 
 # Validacion e instalacion de GIT, Apache2, PHP y MariaDB
 
-echo "\n${BBLUE}Validando e instalando GIT, Apache2, PHP y MariaDB...${NC}"
+echo -e "\n${BBLUE}Validando e instalando GIT, Apache2, PHP y MariaDB...${NC}"
 sleep 1
 
     #Update
 
-echo "\n${BYELLOW}Actualizando servidor...${NC}"
+echo -e "\n${BYELLOW}Actualizando servidor...${NC}"
 apt-get update
-echo "\n${BGREEN}Servidor actualizado.${NC}"
+echo -e "\n${BGREEN}Servidor actualizado.${NC}"
     
     # GIT
 
-echo "\n${BYELLOW}Validando GIT...${NC}"
+echo -e "\n${BYELLOW}Validando GIT...${NC}"
 
 if dpkg -s git > /dev/null 2>&1; then
-    echo "\n${BGREEN}GIT ya estaba instalado.${NC}"
+    echo -e "\n${BGREEN}GIT ya estaba instalado.${NC}"
 else
-    echo "\n${BYELLOW}instalando GIT ...${NC}"
+    echo -e "\n${BYELLOW}instalando GIT ...${NC}"
     apt install -y git
-    echo "\n${BGREEN}GIT instalado.${NC}"
+    echo -e "\n${BGREEN}GIT instalado.${NC}"
 fi
 
     # Apache2 y PHP
 
-echo "\n${BYELLOW}Validando Apache2, PHP y componentes...${NC}"
+echo -e "\n${BYELLOW}Validando Apache2, PHP y componentes...${NC}"
 
 if dpkg -s apache2 > /dev/null 2>&1; then
-    echo "\n${BGREEN}Apache2 ya estaba instalado.${NC}"
+    echo -e "\n${BGREEN}Apache2 ya estaba instalado.${NC}"
 else
-    echo "\n${BYELLOW}Instalando Apache2 ...${NC}"
+    echo -e "\n${BYELLOW}Instalando Apache2 ...${NC}"
     apt install -y apache2
-    echo "\n${BGREEN}Apache2 instalado.${NC}"
+    echo -e "\n${BGREEN}Apache2 instalado.${NC}"
 fi
 
 if dpkg -s php > /dev/null 2>&1; then
-    echo "\n${BGREEN}PHP ya estaba instalado.${NC}"
+    echo -e "\n${BGREEN}PHP ya estaba instalado.${NC}"
 else
-    echo "\n${BYELLOW}Instalando PHP...${NC}"
+    echo -e "\n${BYELLOW}Instalando PHP...${NC}"
     apt install -y php
-    echo "\n${BGREEN} PHP Instalado.${NC}"
+    echo -e "\n${BGREEN} PHP Instalado.${NC}"
 fi
 
 if dpkg -s libapache2-mod-php > /dev/null 2>&1; then
-    echo "\n${BGREEN}Componente PHP ya estaba instalado (libapache2).${NC}"
+    echo -e "\n${BGREEN}Componente PHP ya estaba instalado (libapache2).${NC}"
 else
-    echo "\n${BYELLOW}Instalando componente PHP (libapache2)...${NC}"
+    echo -e "\n${BYELLOW}Instalando componente PHP (libapache2)...${NC}"
     apt install -y libapache2-mod-php
-    echo "\n${BGREEN} Componente instalado (libapache2).${NC}"
+    echo -e "\n${BGREEN} Componente instalado (libapache2).${NC}"
 fi
 
 if dpkg -s php-mysql > /dev/null 2>&1; then
-    echo "\n${BGREEN}Componente PHP ya estaba instalado (php-mysql).${NC}"
+    echo -e "\n${BGREEN}Componente PHP ya estaba instalado (php-mysql).${NC}"
 else
-    echo "\n${BYELLOW}Instalando componente PHP (php-mysql)...${NC}"
+    echo -e "\n${BYELLOW}Instalando componente PHP (php-mysql)...${NC}"
     apt install -y php-mysql
-    echo "\n${BGREEN} Componente instalado (php-mysql).${NC}"
+    echo -e "\n${BGREEN} Componente instalado (php-mysql).${NC}"
 fi
 
     # MariaDB
 
-echo "\n${BYELLOW}Validando MariaDB...${NC}"
+echo -e "\n${BYELLOW}Validando MariaDB...${NC}"
 
 if dpkg -s mariadb-server > /dev/null 2>&1; then
-    echo "\n${BGREEN}MariaDB ya estaba instalado.${NC}"
+    echo -e "\n${BGREEN}MariaDB ya estaba instalado.${NC}"
 else
-    echo "\n${BYELLOW}Instalando MariaDB...${NC}"
+    echo -e "\n${BYELLOW}Instalando MariaDB...${NC}"
     apt install -y mariadb-server
-    echo "\n${BGREEN}MariaDB instalado.${NC}"
+    echo -e "\n${BGREEN}MariaDB instalado.${NC}"
 fi
 
 # Habilitando servicios
 
-echo "\n${BBLUE}Habilitando servicios.${NC}"
+echo -e "\n${BYELLOW}Habilitando servicios.${NC}"
 
 systemctl start apache2
 systemctl enable apache2
@@ -110,11 +110,11 @@ systemctl enable apache2
 systemctl start mariadb
 systemctl enable mariadb
 
-echo "\n${BGREEN}Servicios habilitados.${NC}"
+echo -e "\n${BGREEN}Servicios habilitados.${NC}"
 
 # Configuracion de la base de datos
 
-echo "\n${BBLUE}Configurando base de datos ...${NC}"
+echo -e "\n${BYELLOW}Configurando base de datos ...${NC}"
 
 
 MYSQL_COMMAND="mysql -e \"CREATE DATABASE IF NOT EXISTS devopstravel; \
@@ -123,47 +123,56 @@ MYSQL_COMMAND="mysql -e \"CREATE DATABASE IF NOT EXISTS devopstravel; \
            FLUSH PRIVILEGES;\""
 
 if eval $MYSQL_COMMAND; then
-    echo "\n${BGREEN}Configuración de Base de datos, usuario y contraseña realizada correctamente.${NC}"
+    echo -e "\n${BGREEN}Configuración de Base de datos, usuario y contraseña realizada correctamente.${NC}"
 else
-    echo "\n${BRED}Hubo un error al ejecutar el comando MySQL. Código de salida: ${BYELLOW}$?${NC}"
+    echo -e "\n${BRED}Hubo un error al ejecutar el comando MySQL. Código de salida: ${BYELLOW}$?${NC}"
 fi
 
 # Descarga de pagina web
 
-echo "\n${BBLUE}Descargando pagina web.${NC}"
+echo -e "\n${BBLUE}Descargando pagina web.${NC}"
 
-echo "\n${BYELLOW}Validando informacion preexistente..${NC}"
+echo -e "\n${BYELLOW}Validando informacion preexistente..${NC}"
 
 if [ -d ${REPO} ]; then
-    echo "\n${LBLUE}La carpeta $REPO existe ...${NC}"
+    echo -e "\n${BBLUE}La carpeta $REPO existe, sera reemplazada ...${NC}"
     rm -rf $REPO
 fi
 
-echo "\n${BYELLOW}instalando WEB ...${NC}"
+echo -e "\n${BYELLOW}instalando WEB ...${NC}"
 
 git clone https://github.com/roxsross/$REPO.git -b $BRANCH
 cp -r $REPO/app-295devops-travel/* /var/www/html
 sed -i 's/172.20.1.101/localhost/g' /var/www/html/index.php
 mv /var/www/html/index.html /var/www/html/index.html.bkp
 
+# Preparando base de dato
 
+echo -e "\n${BBLUE}Preparando base de datos...${NC}"
 
+echo -e "\n${BYELLOW}Importando tablas a la base${NC}"
 
+TABLAS="mysql < /root/bootcamp-devops-2023/app-295devops-travel/database/devopstravel.sql"
 
+if eval $TABLAS; then
+    echo -e "\n${BGREEN}Las tablas fueron importadas exitosamente.${NC}"
+else
+    echo -e "\n${BRED}Hubo un error en la importacion. Código de salida: ${BYELLOW}$?${NC}"
+fi
 
+# Reemplazo de password
 
-echo -e "\n${LYELLOW}Cargando tablas en base de datos${NC}"
-
-mysql < /root/bootcamp-devops-2023/app-295devops-travel/database/devopstravel.sql
-
-mv /var/www/html/index.html /var/www/html/index.html.bkp
-
-#Reemplazo de password
+echo -e "\n${BBLUE}Configuracion archivo de conexion entre Pagina y Base de datos.${NC}"
 
 archivoConfig="/var/www/html/config.php"
 
 sed -i "s/\(\$dbPassword *= *\)\(.*\)\(;.*\)/\1\"${PASSDB}\"\3/" "${archivoConfig}"
+
 sed -i "s/codeuser/${USERDB}/g" ${archivoConfig}
 
-### reload
+echo -e "\n${BGREEN}Configuracion exitosa.${NC}"
+
+# reload
 systemctl reload apache2
+
+echo -e "\n${BMAGENTA}IMPLEMENTACION LAMP EXITOSA${NC}"
