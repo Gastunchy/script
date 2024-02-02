@@ -4,6 +4,7 @@
 REPO="bootcamp-devops-2023"
 BRANCH="clase2-linux-bash"
 USERID=$(id -u)
+DISCORD="https://discord.com/api/webhooks/1202369004023590912/b7ra6RnXn6tdldm60P3hZHpBy6bf-U2m6dG6gOE13Ar96Ngx6rfd4uQmHgiXkVxFzWLt"
 
 
 # Colores
@@ -176,3 +177,41 @@ echo -e "\n${BGREEN}Configuracion exitosa.${NC}"
 systemctl reload apache2
 
 echo -e "\n${BMAGENTA}IMPLEMENTACION LAMP EXITOSA${NC}"
+
+# ==========================================================================
+
+# Notificacion a DISCORD
+
+cd "$REPO"
+
+# Obtiene el nombre del repositorio
+REPO_NAME=$(basename $(git rev-parse --show-toplevel))
+# Obtiene la URL remota del repositorio
+REPO_URL=$(git remote get-url origin)
+WEB_URL="localhost"
+# Realiza una solicitud HTTP GET a la URL
+HTTP_STATUS=$(curl -Is "$WEB_URL" | head -n 1)
+
+# Verifica si la respuesta es 200 OK (puedes ajustar esto según tus necesidades)
+if [[ "$HTTP_STATUS" == *"200 OK"* ]]; then
+  # Obtén información del repositorio
+    DEPLOYMENT_INFO2="Despliegue del repositorio $REPO_NAME: "
+    DEPLOYMENT_INFO="La página web $WEB_URL está en línea."
+    COMMIT="Commit: $(git rev-parse --short HEAD)"
+    AUTHOR="Autor: $(git log -1 --pretty=format:'%an')"
+    DESCRIPTION="Descripción: $(git log -1 --pretty=format:'%s')"
+else
+  DEPLOYMENT_INFO="La página web $WEB_URL no está en línea."
+fi
+
+# Obtén información del repositorio
+
+
+# Construye el mensaje
+MESSAGE="$DEPLOYMENT_INFO2\n$DEPLOYMENT_INFO\n$COMMIT\n$AUTHOR\n$REPO_URL\n$DESCRIPTION"
+
+# Envía el mensaje a Discord utilizando la API de Discord
+curl -X POST -H "Content-Type: application/json" \
+     -d '{
+       "content": "'"${MESSAGE}"'"
+     }' "$DISCORD"
