@@ -1,0 +1,169 @@
+#!/bin/bash
+
+# Variables
+REPO="bootcamp-devops-2023"
+BRANCH="clase2-linux-bash"
+USERID=$(id -u)
+
+
+# Colores
+BRED='\033[1;31m'
+BGREEN='\033[1;32m'
+BYELLOW='\033[1;33m'
+BBLUE='\033[1;34m'
+BMAGENTA='\033[1;35m'
+BCYAN='\033[1;36m'
+BWHITE='\033[1;37m'
+NC='\033[0m'
+
+# Validacion de usuario ROOT y variables de DB
+
+if [ "${USERID}" -ne 0 ]; then
+    echo "\n${BRED}Correr con usuario ROOT.${NC}"
+    exit
+elif [ -z "${USERDB}" ]; then
+    echo "\n${BRED}La variable 'USERDB' no esta definida.${NC}"
+    exit
+elif [ -z "${PASSDB}" ]; then
+    echo "\n${BRED}La variable 'PASSDB' no esta definida.${NC}"
+    exit
+fi
+
+# Validacion e instalacion de GIT, Apache2, PHP y MariaDB
+
+echo "\n${BBLUE}Validando e instalando GIT, Apache2, PHP y MariaDB...${NC}"
+sleep 1
+
+    #Update
+
+echo "\n${BYELLOW}Actualizando servidor...${NC}"
+apt-get update
+echo "\n${BGREEN}Servidor actualizado.${NC}"
+    
+    # GIT
+
+echo "\n${BYELLOW}Validando GIT...${NC}"
+
+if dpkg -s git > /dev/null 2>&1; then
+    echo "\n${BGREEN}GIT ya estaba instalado.${NC}"
+else
+    echo "\n${BYELLOW}instalando GIT ...${NC}"
+    apt install -y git
+    echo "\n${BGREEN}GIT instalado.${NC}"
+fi
+
+    # Apache2 y PHP
+
+echo "\n${BYELLOW}Validando Apache2, PHP y componentes...${NC}"
+
+if dpkg -s apache2 > /dev/null 2>&1; then
+    echo "\n${BGREEN}Apache2 ya estaba instalado.${NC}"
+else
+    echo "\n${BYELLOW}Instalando Apache2 ...${NC}"
+    apt install -y apache2
+    echo "\n${BGREEN}Apache2 instalado.${NC}"
+fi
+
+if dpkg -s php > /dev/null 2>&1; then
+    echo "\n${BGREEN}PHP ya estaba instalado.${NC}"
+else
+    echo "\n${BYELLOW}Instalando PHP...${NC}"
+    apt install -y php
+    echo "\n${BGREEN} PHP Instalado.${NC}"
+fi
+
+if dpkg -s libapache2-mod-php > /dev/null 2>&1; then
+    echo "\n${BGREEN}Componente PHP ya estaba instalado (libapache2).${NC}"
+else
+    echo "\n${BYELLOW}Instalando componente PHP (libapache2)...${NC}"
+    apt install -y libapache2-mod-php
+    echo "\n${BGREEN} Componente instalado (libapache2).${NC}"
+fi
+
+if dpkg -s php-mysql > /dev/null 2>&1; then
+    echo "\n${BGREEN}Componente PHP ya estaba instalado (php-mysql).${NC}"
+else
+    echo "\n${BYELLOW}Instalando componente PHP (php-mysql)...${NC}"
+    apt install -y php-mysql
+    echo "\n${BGREEN} Componente instalado (php-mysql).${NC}"
+fi
+
+    # MariaDB
+
+echo "\n${BYELLOW}Validando MariaDB...${NC}"
+
+if dpkg -s mariadb-server > /dev/null 2>&1; then
+    echo "\n${BGREEN}MariaDB ya estaba instalado.${NC}"
+else
+    echo "\n${BYELLOW}Instalando MariaDB...${NC}"
+    apt install -y mariadb-server
+    echo "\n${BGREEN}MariaDB instalado.${NC}"
+fi
+
+# Habilitando servicios
+
+echo "\n${BBLUE}Habilitando servicios.${NC}"
+
+systemctl start apache2
+systemctl enable apache2
+
+systemctl start mariadb
+systemctl enable mariadb
+
+echo "\n${BGREEN}Servicios habilitados.${NC}"
+
+# Configuracion de la base de datos
+
+echo "\n${BBLUE}Configurando base de datos ...${NC}"
+
+
+MYSQL_COMMAND="mysql -e \"CREATE DATABASE IF NOT EXISTS devopstravel; \
+           CREATE USER IF NOT EXISTS '${USERDB}'@'localhost' IDENTIFIED BY '${PASSDB}'; \
+           GRANT ALL PRIVILEGES ON devopstravel.* TO '${USERDB}'@'localhost'; \
+           FLUSH PRIVILEGES;\""
+
+if eval $MYSQL_COMMAND; then
+    echo "\n${BGREEN}Configuración de Base de datos, usuario y contraseña realizada correctamente.${NC}"
+else
+    echo "\n${BRED}Hubo un error al ejecutar el comando MySQL. Código de salida: ${BYELLOW}$?${NC}"
+fi
+
+# Descarga de pagina web
+
+echo "\n${BBLUE}Descargando pagina web.${NC}"
+
+echo "\n${BYELLOW}Validando informacion preexistente..${NC}"
+
+if [ -d ${REPO} ]; then
+    echo "\n${LBLUE}La carpeta $REPO existe ...${NC}"
+    rm -rf $REPO
+fi
+
+echo "\n${BYELLOW}instalando WEB ...${NC}"
+
+git clone https://github.com/roxsross/$REPO.git -b $BRANCH
+cp -r $REPO/app-295devops-travel/* /var/www/html
+sed -i 's/172.20.1.101/localhost/g' /var/www/html/index.php
+mv /var/www/html/index.html /var/www/html/index.html.bkp
+
+
+
+
+
+
+
+echo -e "\n${LYELLOW}Cargando tablas en base de datos${NC}"
+
+mysql < /root/bootcamp-devops-2023/app-295devops-travel/database/devopstravel.sql
+
+mv /var/www/html/index.html /var/www/html/index.html.bkp
+
+#Reemplazo de password
+
+archivoConfig="/var/www/html/config.php"
+
+sed -i "s/\(\$dbPassword *= *\)\(.*\)\(;.*\)/\1\"${PASSDB}\"\3/" "${archivoConfig}"
+sed -i "s/codeuser/${USERDB}/g" ${archivoConfig}
+
+### reload
+systemctl reload apache2
