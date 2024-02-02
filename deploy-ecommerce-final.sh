@@ -153,7 +153,7 @@ echo -e "\n${BBLUE}Preparando base de datos...${NC}"
 
 echo -e "\n${BYELLOW}Importando tablas a la base${NC}"
 
-TABLAS="mysql < /root/bootcamp-devops-2023/app-295devops-travel/database/devopstravel.sql"
+TABLAS="mysql < bootcamp-devops-2023/app-295devops-travel/database/devopstravel.sql"
 
 if eval $TABLAS; then
     echo -e "\n${BGREEN}Las tablas fueron importadas exitosamente.${NC}"
